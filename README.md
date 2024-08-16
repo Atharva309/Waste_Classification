@@ -46,6 +46,8 @@ We used three main datasets for this project:
 
 ## Results
 
+The results for this project can be seen in the OUTPUT_OF_ALL.ipynb file.
+
 The project demonstrates the potential of deep learning models for trash classification:
 - **MobileNet** and **ResNet** performed well for binary classification between organic and inorganic waste.
 - **ResNet** and **YOLOv5** showed strong performance for the 7-class classification task, with YOLOv5 also proving effective for the more complex 11-class classification.
