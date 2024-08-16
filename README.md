@@ -64,7 +64,7 @@ This project highlights the effectiveness of deep learning models for trash clas
 
 ## References
 
-- [Own Larger Dataset]([https://github.com/Atharva309/trash_classification_data.git](https://www.dropbox.com/scl/fi/uwftk9pwbka66evt4sdf3/trash_classification_data.zip?rlkey=ntnhuvtmb4xyxr92zse99w7pa&st=n9tq5oh4&dl=0))
+- [Own Larger Dataset](https://www.dropbox.com/scl/fi/uwftk9pwbka66evt4sdf3/trash_classification_data.zip?rlkey=ntnhuvtmb4xyxr92zse99w7pa&st=n9tq5oh4&dl=0)
 - [Kaggle Waste Classification Dataset](https://www.kaggle.com/datasets/techsash/waste-classification-data)
 - [7-Class Garbage Classification Dataset](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
 - [E-Waste Dataset](https://www.kaggle.com/datasets/kaustubh2402/ewaste-dataset)
