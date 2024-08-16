@@ -1,13 +1,71 @@
-# Dataset
+# Waste Image Classification Project
 
-Created Own Larger Datasets and saved at [here](https://github.com/Atharva309/trash_classification_data.git).
+This project focuses on classifying trash images into multiple categories using deep learning models. It involves creating custom datasets, training models like MobileNet, ResNet, and YOLOv5, and evaluating their performance on various trash classification tasks.
 
-The  project  uses  three  datasets  for  trash  image  classification.  The  first  dataset  consists  of  over  10,000 images  of  organic  and  inorganic  waste.  This  dataset  was  obtained  from  the  Kaggle  website  at [here](https://www.kaggle.com/datasets/techsash/waste-classification-data).
+## Dataset
 
-The  second  dataset  consists  of  7  classes  of  trash,  namely  cardboard,  paper,  plastic,  glass,  e-waste, medical,  and  metal.  This  dataset  was  created  by  collecting  600  images  for  each  class  from  various sources,  including  the  Kaggle  website  at  [here](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification), [here](https://www.kaggle.com/datasets/kaustubh2402/ewaste-dataset), and images found from the internet.
+1. **[Own Larger Dataset](https://github.com/Atharva309/trash_classification_data.git)**:
+   - Created a comprehensive dataset containing images for trash classification.
+   - Collected images from multiple sources, including the internet and existing datasets.
 
-The third dataset consists of 11 classes of trash, namely cardboard, paper, plastic, glass, e-waste, medical, metal,  clothes,  shoes,  hazardous,  and  sanitary.  This  dataset  was  created  by  collecting  between  3000  to 5000   images   for   most   classes   from   various   sources,   including   the   Kaggle   website   at [here](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification),  [here](https://www.kaggle.com/datasets/mostafaabla/garbage-classification), the  Roboflow  website  datasets, and images from the internet.
+We used three main datasets for this project:
 
-# Result
+2. **[Organic and Inorganic Waste Dataset](https://www.kaggle.com/datasets/techsash/waste-classification-data)**:
+   - Contains over 10,000 images categorized into organic and inorganic waste.
+   - Used for binary classification between organic and inorganic trash.
 
-We achieved an accuracy of 0.795 for organic/inorganic classification using MobileNet, and an accuracy of 0.877 for the same task using ResNet. For the 7-class  trash  classification  task,  we  achieved  an  accuracy  of  0.912  using  ResNet,  and  an accuracy of 0.87 using YOLOv5 after 100 epochs. Finally, for the 11-class trash classification task, we achieved an accuracy of 0.82 using YOLOv5 after 35 epochs. These results show the effectiveness of our proposed approach and demonstrate the potential of deep learning models in the field of trash image classification. However,further improvements in accuracy and model performance can be achieved by increasing the size and diversity of the dataset, as well as by fine-tuning the hyperparameters of the models.
+3. **7-Class Trash Dataset**:
+   - Categories: cardboard, paper, plastic, glass, e-waste, medical, and metal.
+   - Consists of 600 images per class.
+   - Collected from multiple sources, including:
+     - [Garbage Classification](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+     - [E-Waste Dataset](https://www.kaggle.com/datasets/kaustubh2402/ewaste-dataset)
+     - Additional images from the internet.
+
+4. **11-Class Trash Dataset**:
+   - Categories: cardboard, paper, plastic, glass, e-waste, medical, metal, clothes, shoes, hazardous, and sanitary.
+   - Contains between 3000 to 5000 images per class.
+   - Collected from multiple sources, including:
+     - [Garbage Classification](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+     - [Garbage Classification (Mostafa Abla)](https://www.kaggle.com/datasets/mostafaabla/garbage-classification)
+     - Roboflow datasets
+     - Additional images from the internet.
+
+## Methodology
+
+1. **Binary Classification (Organic/Inorganic Waste)**:
+   - **MobileNet**: Achieved an accuracy of 0.795.
+   - **ResNet**: Achieved an accuracy of 0.877.
+
+2. **7-Class Trash Classification**:
+   - **ResNet**: Achieved an accuracy of 0.912.
+   - **YOLOv5**: Achieved an accuracy of 0.87 after 100 epochs.
+
+3. **11-Class Trash Classification**:
+   - **YOLOv5**: Achieved an accuracy of 0.82 after 35 epochs.
+
+## Results
+
+The project demonstrates the potential of deep learning models for trash classification:
+- **MobileNet** and **ResNet** performed well for binary classification between organic and inorganic waste.
+- **ResNet** and **YOLOv5** showed strong performance for the 7-class classification task, with YOLOv5 also proving effective for the more complex 11-class classification.
+- The results suggest that increasing the dataset size and diversity, along with further hyperparameter tuning, could improve accuracy and overall model performance.
+
+## Future Work
+
+Future improvements could focus on:
+- Expanding the dataset with more diverse and real-world images.
+- Fine-tuning the models and experimenting with different architectures.
+- Implementing real-time trash classification for practical applications.
+
+## Conclusion
+
+This project highlights the effectiveness of deep learning models for trash classification, which can be useful in environmental applications such as waste sorting and recycling. The results show promising accuracy levels and demonstrate the potential for further improvements.
+
+## References
+
+- [Own Larger Dataset](https://github.com/Atharva309/trash_classification_data.git)
+- [Kaggle Waste Classification Dataset](https://www.kaggle.com/datasets/techsash/waste-classification-data)
+- [7-Class Garbage Classification Dataset](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+- [E-Waste Dataset](https://www.kaggle.com/datasets/kaustubh2402/ewaste-dataset)
+- [11-Class Garbage Classification Dataset (Mostafa Abla)](https://www.kaggle.com/datasets/mostafaabla/garbage-classification)
