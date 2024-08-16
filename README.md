@@ -4,7 +4,7 @@ This project focuses on classifying trash images into multiple categories using 
 
 ## Dataset
 
-1. **[Own Larger Dataset]([https://www.dropbox.com/scl/fi/uwftk9pwbka66evt4sdf3/trash_classification_data.zip?rlkey=ntnhuvtmb4xyxr92zse99w7pa&st=n9tq5oh4&dl=0])**:
+1. **[Own Larger Dataset](https://www.dropbox.com/scl/fi/uwftk9pwbka66evt4sdf3/trash_classification_data.zip?rlkey=ntnhuvtmb4xyxr92zse99w7pa&st=n9tq5oh4&dl=0)**:
    - Created a comprehensive dataset containing images for trash classification.
    - Collected images from multiple sources, including the internet and existing datasets.
 
