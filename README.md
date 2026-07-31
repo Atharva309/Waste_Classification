@@ -13,6 +13,8 @@ pinned: false
 
 👉 **[Test out the webapp here!](https://huggingface.co/spaces/atharva9/trashcam-app)** 👈
 
+![Conveyor Belt Demo](docs/images/demoimg.png)
+
 A real-time waste-sorting computer vision project built around a simulated
 conveyor belt: objects move across a live camera feed, get localized,
 classified into one of six recyclable material classes (or "organic"), and
