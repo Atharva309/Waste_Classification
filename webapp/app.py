@@ -477,13 +477,6 @@ def get_dashboard_stats():
 
 @app.route("/scan", methods=["POST"])
 def scan():
-    try:
-        return _scan_impl()
-    except Exception as e:
-        import traceback
-        return jsonify({"error": traceback.format_exc()}), 500
-
-def _scan_impl():
     data = request.json or {}
     image_b64 = data.get("image", "")
     confidence_mode = data.get("confidence_mode", "balanced")
@@ -635,7 +628,7 @@ def _scan_impl():
         # not classifier noise. Lowering conf gives YOLO more chances per
         # frame to propose "something is here," even at low confidence,
         # closer to how consistently BeltLocalizer re-catches the same blob.
-        res = active_yolo(frame, conf=0.10, iou=0.5, imgsz=640, verbose=False)[0]
+        res = active_yolo(frame, conf=0.10, iou=0.5, imgsz=640, verbose=False, device="cpu")[0]
         frame_h, frame_w = frame.shape[:2]
         for box in res.boxes:
             rx1, ry1, rx2, ry2 = [float(v) for v in box.xyxy[0].cpu().numpy()]
@@ -687,7 +680,7 @@ def _scan_impl():
     else:
         # 1. YOLO Single-Stage
         active_yolo = model_yolo_yolofirstactual
-        res = active_yolo(frame, conf=0.01, iou=0.99, verbose=False)[0]
+        res = active_yolo(frame, conf=0.01, iou=0.99, verbose=False, device="cpu")[0]
         yolo_classes = ["organic", "cardboard", "ewaste", "glass", "metal", "paper", "plastic"]
         for box in res.boxes:
             cls_id = int(box.cls[0].item())
