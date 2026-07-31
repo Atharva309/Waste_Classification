@@ -8,3 +8,4 @@ pillow
 matplotlib
 flask
 ultralytics
+spaces

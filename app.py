@@ -1,5 +1,10 @@
 import os
 import sys
+import spaces
+
+@spaces.GPU
+def _zero_gpu_bypass():
+    pass
 
 from webapp.app import app, init_app
 
