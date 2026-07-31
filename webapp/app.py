@@ -477,6 +477,13 @@ def get_dashboard_stats():
 
 @app.route("/scan", methods=["POST"])
 def scan():
+    try:
+        return _scan_impl()
+    except Exception as e:
+        import traceback
+        return jsonify({"error": traceback.format_exc()}), 500
+
+def _scan_impl():
     data = request.json or {}
     image_b64 = data.get("image", "")
     confidence_mode = data.get("confidence_mode", "balanced")
