@@ -1,0 +1,70 @@
+{
+  "baseline_checkpoint": "outputs/stage2_material_mobilenet_removedbadapples_v2.pt",
+  "baseline_val_macro_f1": 0.8764826054918363,
+  "best_epoch": 2,
+  "best_val_macro_f1": 0.8820044986441299,
+  "n_hard_examples": 549,
+  "n_easy_examples_pool": 12763,
+  "hard_example_confidence_threshold": 0.6,
+  "test_accuracy": 0.8821292775665399,
+  "test_macro_f1": 0.8836709106750352,
+  "test_weighted_f1": 0.8830562771809771,
+  "test_confusion_matrix": [
+    [
+      121,
+      1,
+      1,
+      2,
+      5,
+      10
+    ],
+    [
+      1,
+      122,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      2,
+      0,
+      140,
+      5,
+      0,
+      10
+    ],
+    [
+      0,
+      0,
+      4,
+      78,
+      0,
+      9
+    ],
+    [
+      5,
+      0,
+      2,
+      1,
+      101,
+      10
+    ],
+    [
+      8,
+      0,
+      4,
+      10,
+      3,
+      134
+    ]
+  ],
+  "classes": [
+    "cardboard",
+    "ewaste",
+    "glass",
+    "metal",
+    "paper",
+    "plastic"
+  ]
+}

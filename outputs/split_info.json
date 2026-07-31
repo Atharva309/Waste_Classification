@@ -1,0 +1,17 @@
+{
+  "stage2": {
+    "dropped_duplicates": 1181,
+    "duplicate_groups_found": 2461,
+    "train_size": 13699,
+    "val_size": 846,
+    "test_size": 847
+  },
+  "stage1": {
+    "leakage_found": true,
+    "dropped_duplicates": 119,
+    "duplicate_groups_found": 584,
+    "train_size": 21675,
+    "val_size": 1641,
+    "test_size": 1642
+  }
+}

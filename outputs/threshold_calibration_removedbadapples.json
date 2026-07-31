@@ -1,0 +1,83 @@
+{
+  "recommended_stage1_cutoff": 0.5,
+  "recommended_stage2_threshold": 0.3,
+  "recommended_macro_f1": 0.875865132033059,
+  "recommended_weighted_f1": 0.9237330441091295,
+  "current_stage1_cutoff": 0.5,
+  "current_stage2_threshold": 0.4,
+  "current_macro_f1": 0.8722922460239894,
+  "current_weighted_f1": 0.9214258252993104,
+  "top_10": [
+    {
+      "stage1_cutoff": 0.5,
+      "stage2_threshold": 0.3,
+      "macro_f1": 0.875865132033059,
+      "weighted_f1": 0.9237330441091295,
+      "n_unknown": 5
+    },
+    {
+      "stage1_cutoff": 0.5,
+      "stage2_threshold": 0.35,
+      "macro_f1": 0.8758541506146299,
+      "weighted_f1": 0.9236562491704126,
+      "n_unknown": 14
+    },
+    {
+      "stage1_cutoff": 0.6,
+      "stage2_threshold": 0.35,
+      "macro_f1": 0.8754634247648027,
+      "weighted_f1": 0.9229605690472432,
+      "n_unknown": 15
+    },
+    {
+      "stage1_cutoff": 0.45,
+      "stage2_threshold": 0.3,
+      "macro_f1": 0.8754582951588387,
+      "weighted_f1": 0.9236633199835327,
+      "n_unknown": 5
+    },
+    {
+      "stage1_cutoff": 0.45,
+      "stage2_threshold": 0.35,
+      "macro_f1": 0.8754487532820142,
+      "weighted_f1": 0.92358753868348,
+      "n_unknown": 14
+    },
+    {
+      "stage1_cutoff": 0.55,
+      "stage2_threshold": 0.3,
+      "macro_f1": 0.875246492228106,
+      "weighted_f1": 0.9231818624520182,
+      "n_unknown": 5
+    },
+    {
+      "stage1_cutoff": 0.55,
+      "stage2_threshold": 0.35,
+      "macro_f1": 0.8752357986986762,
+      "weighted_f1": 0.9231052097775149,
+      "n_unknown": 14
+    },
+    {
+      "stage1_cutoff": 0.35,
+      "stage2_threshold": 0.3,
+      "macro_f1": 0.87516813200489,
+      "weighted_f1": 0.9230484017615339,
+      "n_unknown": 5
+    },
+    {
+      "stage1_cutoff": 0.6,
+      "stage2_threshold": 0.3,
+      "macro_f1": 0.8751647448236602,
+      "weighted_f1": 0.9228194531788451,
+      "n_unknown": 5
+    },
+    {
+      "stage1_cutoff": 0.35,
+      "stage2_threshold": 0.35,
+      "macro_f1": 0.8751554614537195,
+      "weighted_f1": 0.9229710135159027,
+      "n_unknown": 14
+    }
+  ],
+  "n_calibration_images": 1799
+}

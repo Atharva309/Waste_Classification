@@ -1,0 +1,15 @@
+{
+  "baseline_plastic_precision": 0.6431718061674009,
+  "baseline_plastic_recall": 0.8066298342541437,
+  "baseline_plastic_f1": 0.7156862745098039,
+  "baseline_macro_f1": 0.791723595484689,
+  "best_rescue_threshold": 0.3,
+  "best_rescue_plastic_f1": 0.7156862745098039,
+  "best_rescue_others_untouched": true,
+  "best_bias": -0.25,
+  "best_bias_plastic_f1": 0.7282051282051282,
+  "best_bias_macro_f1": 0.7918822995442406,
+  "stage1_cutoff": 0.65,
+  "stage2_threshold": 0.3,
+  "cardboard_floor": 0.65
+}

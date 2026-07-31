@@ -1,0 +1,14 @@
+{
+  "recommended_metal_floor": 0.6,
+  "cardboard_floor_held_at": 0.65,
+  "baseline_metal_precision": 0.7314814814814815,
+  "recommended_metal_precision": 0.8987341772151899,
+  "baseline_metal_recall": 0.8061224489795918,
+  "recommended_metal_recall": 0.7244897959183674,
+  "recommended_macro_f1": 0.7900203356895277,
+  "baseline_macro_f1": 0.7849818220118827,
+  "n_unknown": 99,
+  "other_classes_verified_untouched": true,
+  "stage1_cutoff": 0.65,
+  "stage2_threshold": 0.3
+}

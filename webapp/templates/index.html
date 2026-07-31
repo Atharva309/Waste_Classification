@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Conveyor Belt Pipeline</title>
+    <style>
+        :root {
+            --bg-color: #0f172a; --panel-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --accent: #3b82f6; --accent-hover: #2563eb;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: var(--text-main); margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
+        .header { padding: 1rem 2rem; border-bottom: 1px solid var(--border); background: var(--panel-bg); backdrop-filter: blur(10px); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+        .disclaimer { background: rgba(234, 179, 8, 0.1); border-left: 4px solid #eab308; padding: 0.75rem; border-radius: 4px; font-size: 0.85rem; color: #fde047; max-width: 600px; }
+        .container { display: flex; flex: 1; padding: 2rem; gap: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box; }
+        .sidebar { width: 300px; display: flex; flex-direction: column; gap: 1.5rem; }
+        .panel { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+        .panel h2 { margin: 0 0 1rem; font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .control-group { margin-bottom: 1rem; }
+        .control-group label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: var(--text-muted); }
+        .control-hint { display: block; margin-top: 0.35rem; font-size: 0.78rem; line-height: 1.3; color: var(--text-muted); opacity: 0.85; }
+        select, input[type="range"] { width: 100%; padding: 0.5rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); color: white; border-radius: 6px; outline: none; }
+        .btn-primary { background: var(--accent); border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; padding: 0.75rem; color: white; border-radius: 6px; width: 100%; margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-danger { background: transparent; border: 1px solid #ef4444; color: #ef4444; cursor: pointer; transition: all 0.2s; padding: 0.75rem; border-radius: 6px; width: 100%; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.1); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .stat-card { background: rgba(15, 23, 42, 0.5); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); text-align: center; border-top: 3px solid transparent; cursor: pointer; transition: transform 0.1s; }
+        .stat-card:hover { transform: scale(1.02); background: rgba(255, 255, 255, 0.05); }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--text-main); margin: 0.25rem 0; }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
+        .main-content { flex: 1; display: flex; flex-direction: column; background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; backdrop-filter: blur(12px); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+        .tabs { display: flex; border-bottom: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+        .tab-btn { flex: 1; background: none; border: none; padding: 1rem; color: var(--text-muted); font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; }
+        .tab-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        .tab-pane { display: none; flex: 1; flex-direction: column; padding: 1.5rem; overflow-y: auto; }
+        .tab-pane.active { display: flex; }
+        .belt-container { flex: 1; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; background: #000; }
+        canvas { border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 100%; }
+        .status-bar { margin-top: 1rem; display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; padding: 0.75rem 1rem; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border); }
+        
+        /* Dashboard Styles */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .dash-card { background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border); }
+        .dash-card h3 { margin: 0 0 1rem 0; font-size: 1.1rem; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .dash-metrics-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        table.cm-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: center; }
+        table.cm-table th, table.cm-table td { padding: 0.4rem; border: 1px solid var(--border); }
+        table.cm-table th { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+        .btn-refresh { background: var(--accent); border: none; color: white; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; align-self: flex-start; }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--bg-color); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; width: 90%; max-width: 800px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem; }
+        .modal-header h2 { margin: 0; }
+        .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        .metrics-dashboard { display: flex; gap: 1rem; margin-bottom: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 8px; justify-content: space-around; text-align: center; }
+        .metric-item { display: flex; flex-direction: column; }
+        .metric-val { font-size: 1.25rem; font-weight: bold; color: var(--text-main); }
+        .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; overflow-y: auto; padding-right: 0.5rem; }
+        .gallery-item { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; position: relative; }
+        .gallery-item img { width: 100%; height: 120px; object-fit: contain; background: #000; border-radius: 4px; margin-bottom: 0.5rem; }
+        .match-badge { position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+        .match-true { background: #22c55e; color: white; }
+        .match-false { background: #ef4444; color: white; }
+        .gallery-details { font-size: 0.8rem; line-height: 1.4; color: var(--text-muted); }
+        .gallery-details strong { color: var(--text-main); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Conveyor Belt Detection Pipeline (Live Animation)</h1>
+        <div class="disclaimer">
+            <strong>Note:</strong> Localization is background subtraction. Items below confidence threshold drop into the "Unknown" bin. Click any bin to see its history.
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <div class="panel">
+                <h2>Controls</h2>
+                <button class="btn-primary" id="toggleBeltBtn" onclick="toggleBelt()">Stop Belt</button>
+                <div class="control-group" style="margin-top: 1rem;">
+                    <label>Belt Speed (px/s)</label>
+                    <input type="range" id="beltSpeed" min="50" max="400" value="80">
+                </div>
+                <div class="control-group">
+                    <label>Spawn Rate (higher = more overlap)</label>
+                    <input type="range" id="spawnRate" min="0.005" max="0.05" step="0.005" value="0.02">
+                </div>
+                <div class="control-group">
+                    <label>Confidence Mode</label>
+                    <select id="confidenceMode">
+                        <option value="high_recall">High Recall</option>
+                        <option value="balanced" selected>Balanced</option>
+                        <option value="high_precision">High Precision</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Model</label>
+                    <select id="detectorModel" onchange="updateModelHint()">
+                        <option value="frankenstein" selected>Hybrid (Recommended)</option>
+                        <option value="cascade">Cascade Classifier</option>
+                        <option value="yolo">YOLO Detector</option>
+                    </select>
+                    <small id="detectorModelHint" class="control-hint"></small>
+                </div>
+                <div class="control-group" id="cascadeCheckpointGroup">
+                    <label>Cascade Version</label>
+                    <select id="stage2Checkpoint" onchange="updateCascadeHint()">
+                        <option value="lastditchattempt" selected>Latest (Recommended)</option>
+                        <option value="removedbadapples_v2">Previous Version</option>
+                    </select>
+                    <small id="cascadeCheckpointHint" class="control-hint"></small>
+                </div>
+                <div class="control-group">
+                    <label>NMS Method</label>
+                    <select id="nmsMethod">
+                        <option value="hard">Hard NMS</option>
+                        <option value="soft_linear">Soft-NMS (Linear)</option>
+                        <option value="soft_gaussian" selected>Soft-NMS (Gaussian)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="panel">
+                <h2>Live Segregation Bins</h2>
+                <div class="stat-grid" id="binsGrid"></div>
+                <button class="btn-danger" style="margin-top: 1rem;" onclick="resetBins()">Reset Bins</button>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-belt-btn" onclick="switchTab('belt')">Live Belt View</button>
+                <button class="tab-btn" id="tab-dashboard-btn" onclick="switchTab('dashboard')">Session Metrics Dashboard</button>
+            </div>
+            
+            <div id="tab-belt" class="tab-pane active">
+                <div class="belt-container" id="canvasWrapper">
+                    <canvas id="beltCanvas" width="900" height="400"></canvas>
+                </div>
+                <div class="status-bar">
+                    <span>Total Items Processed: <strong id="totalItems">0</strong></span>
+                    <span>Last Scan Latency: <strong id="latencyMs">0.0</strong> ms</span>
+                </div>
+                
+                <!-- NEW Permanent Debug Section -->
+                <div id="permanent-debug-section" style="margin-top: 20px; display: none; gap: 20px; border-top: 1px solid #333; padding-top: 20px;">
+                    <div style="flex: 1;">
+                        <h3 style="margin-top: 0; font-size: 14px; color: #aaa;">Model's View (Raw Payload)</h3>
+                        <div style="position: relative; width: 100%; max-width: 400px; border: 1px solid #444; background: #111;">
+                            <img id="raw-payload-img" src="" style="width: 100%; display: block;" />
+                            <div id="raw-payload-boxes" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="margin-top: 0; font-size: 14px; color: #aaa;">Final Detections (Post-NMS)</h3>
+                        <div id="raw-detections-list" style="height: 400px; overflow-y: auto; background: #111; padding: 10px; border: 1px solid #444;">
+                            <p style="color: #666; font-size: 13px; margin: 0;">Waiting for scan...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-dashboard" class="tab-pane">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h2>Session-Wide Performance</h2>
+                    <button class="btn-refresh" onclick="loadDashboard()">Refresh Data</button>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <h3>Global Counts & mAP</h3>
+                        <div id="dash-counts" style="margin-bottom: 1rem;">Loading...</div>
+                        <div id="dash-map"></div>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3>Inference Latency (ms)</h3>
+                        <div id="dash-latency">Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="dash-card" style="margin-bottom: 1.5rem;">
+                    <h3>Per-Class Performance (Precision / Recall / F1)</h3>
+                    <div id="dash-pr">Loading...</div>
+                </div>
+                
+                <div class="dash-card">
+                    <h3>Confusion Matrix (Rows: True, Cols: Pred)</h3>
+                    <div id="dash-cm" style="overflow-x: auto;">Loading...</div>
+                </div>
+            </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">History: Bin Name</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="metrics-dashboard" id="modalMetrics">
+                <!-- Populated by JS -->
+            </div>
+            <div class="gallery" id="galleryGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Tab logic
+        let currentTab = 'belt';
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.getElementById('tab-belt-btn').classList.remove('active');
+            document.getElementById('tab-dashboard-btn').classList.remove('active');
+            document.getElementById('tab-belt').classList.remove('active');
+            document.getElementById('tab-dashboard').classList.remove('active');
+            
+            document.getElementById(`tab-${tabId}-btn`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            
+            if(tabId === 'dashboard') {
+                loadDashboard();
+            }
+        }
+        
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/dashboard_stats');
+                const data = await res.json();
+                
+                // 1. Counts & mAP
+                document.getElementById('dash-counts').innerHTML = `
+                    <div class="dash-metrics-row"><span>Total Processed:</span> <strong>${data.counts.total}</strong></div>
+                    <div class="dash-metrics-row"><span>True Positives:</span> <strong style="color:#22c55e">${data.counts.tp}</strong></div>
+                    <div class="dash-metrics-row"><span>False Positives:</span> <strong style="color:#ef4444">${data.counts.fp}</strong></div>
+                    <div class="dash-metrics-row"><span>False Negatives:</span> <strong style="color:#f59e0b">${data.counts.fn}</strong></div>
+                `;
+                
+                let apHtml = `<div class="dash-metrics-row" style="margin-top:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.5rem;">
+                    <span><strong>Overall mAP:</strong></span> <strong>${(data.mAP * 100).toFixed(1)}%</strong>
+                </div>`;
+                for (const [cls, ap] of Object.entries(data.AP_per_class)) {
+                    apHtml += `<div class="dash-metrics-row"><span>AP ${cls}:</span> <span>${(ap * 100).toFixed(1)}%</span></div>`;
+                }
+                document.getElementById('dash-map').innerHTML = apHtml;
+                
+                // 2. Latency
+                const lat = data.latency;
+                document.getElementById('dash-latency').innerHTML = `
+                    <div class="dash-metrics-row"><span>Mean:</span> <strong>${lat.mean.toFixed(2)} ms</strong></div>
+                    <div class="dash-metrics-row"><span>p50:</span> <span>${lat.p50.toFixed(2)} ms</span></div>
+                    <div class="dash-metrics-row"><span>p95:</span> <span>${lat.p95.toFixed(2)} ms</span></div>
+                    <div class="dash-metrics-row"><span>p99:</span> <span style="color:#ef4444">${lat.p99.toFixed(2)} ms</span></div>
+                    <div class="dash-metrics-row" style="margin-top:1rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:0.5rem;">
+                        <span>Throughput:</span> <strong>${lat.throughput.toFixed(1)} FPS</strong>
+                    </div>
+                `;
+                
+                // 3. Per-class PR
+                let prHtml = `<table class="cm-table">
+                    <tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1 Score</th><th>Support</th></tr>`;
+                data.classes.forEach((cls, i) => {
+                    prHtml += `<tr>
+                        <td style="font-weight:bold; color:var(--accent)">${cls}</td>
+                        <td>${(data.per_class.precision[i] * 100).toFixed(1)}%</td>
+                        <td>${(data.per_class.recall[i] * 100).toFixed(1)}%</td>
+                        <td>${(data.per_class.f1[i] * 100).toFixed(1)}%</td>
+                        <td>${data.per_class.support[i]}</td>
+                    </tr>`;
+                });
+                prHtml += `</table>
+                <div style="margin-top:1rem; display:flex; gap:2rem; justify-content:center;">
+                    <div>Macro F1: <strong>${(data.macro_f1 * 100).toFixed(1)}%</strong></div>
+                    <div>Weighted F1: <strong>${(data.weighted_f1 * 100).toFixed(1)}%</strong></div>
+                </div>`;
+                document.getElementById('dash-pr').innerHTML = prHtml;
+                
+                // 4. Confusion Matrix
+                let cmHtml = `<table class="cm-table"><tr><th></th>`;
+                data.classes.forEach(c => { cmHtml += `<th>${c}</th>`; });
+                cmHtml += `</tr>`;
+                
+                data.confusion_matrix.forEach((row, i) => {
+                    cmHtml += `<tr><th style="color:var(--accent)">${data.classes[i]}</th>`;
+                    row.forEach((val, j) => {
+                        const isDiag = (i === j);
+                        const style = val > 0 ? (isDiag ? 'background:rgba(34,197,94,0.2)' : 'background:rgba(239,68,68,0.2)') : '';
+                        cmHtml += `<td style="${style}">${val}</td>`;
+                    });
+                    cmHtml += `</tr>`;
+                });
+                cmHtml += `</table>`;
+                document.getElementById('dash-cm').innerHTML = cmHtml;
+                
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        
+        // Belt Animation Logic
+        const canvas = document.getElementById('beltCanvas');
+        const ctx = canvas.getContext('2d');
+        const offscreenCanvas = document.createElement('canvas');
+        const offscreenCtx = offscreenCanvas.getContext('2d');
+        
+        let isPaused = false;
+        
+        function toggleBelt() {
+            isPaused = !isPaused;
+            const btn = document.getElementById('toggleBeltBtn');
+            btn.innerText = isPaused ? "Start Belt" : "Stop Belt";
+            btn.style.background = isPaused ? "#10b981" : "var(--accent)";
+            if (!isPaused) lastTime = performance.now();
+        }
+
+        const beltColor = 'rgb(60,60,65)';
+        const beltImg = new Image();
+        beltImg.onload = () => console.log("belt texture loaded", beltImg.width, beltImg.height);
+        beltImg.onerror = (e) => console.error("belt texture failed to load", e);
+        beltImg.src = "/static/belt.jpg";
+        let beltOffset = 0;
+        
+        // NOTES.md section 64 follow-up: calibrated by
+        // scripts/calibrate_cardboard_floor_removedbadapples_v2.py against
+        // single, independent images (val macro-F1 peaked at 0.7850 vs.
+        // 0.7738 baseline, cardboard precision 0.663 -> 0.896) -- that
+        // methodology matches the FINAL aggregated per-object decision
+        // below, not each raw per-frame vote. Only applies when the
+        // Cascade Checkpoint dropdown is removedbadapples_v2, matching the
+        // backend's own scoping for this checkpoint-specific value.
+        const CARDBOARD_CONFIDENCE_FLOOR_REMOVEDBADAPPLES_V2 = 0.65;
+
+        // NOTES.md section 81: unknown-bin second-guess rescue. User's own
+        // observation from the bin history UI (top3 display, section 80):
+        // items landing in "unknown" very often had their TRUE class
+        // sitting in 2nd place. Fits what's already known about cardboard
+        // specifically (sections 63-65: an over-eager "sink" that wins with
+        // false confidence) -- when a winner's confidence is too low to
+        // trust, the runner-up is plausibly the genuine class, not noise.
+        // "unknown" is never a real ground-truth label (section 19), so
+        // promoting a reasonably-confident 2nd guess instead of leaving an
+        // item unknown can only ever help -- there's no case where staying
+        // unknown was already the correct answer. MIN_CONFIDENCE is a
+        // sanity floor so a near-zero 2nd guess doesn't get promoted just
+        // because it happened to be 2nd -- live-tuned guess, not offline-
+        // validated (same reason as the plastic rescue margin above: no
+        // representative offline distribution exists for "unknown" items).
+        const UNKNOWN_RESCUE_MIN_CONFIDENCE = 0.15;
+
+        // NOTES.md section 65: same mechanism, second sink -- metal was
+        // absorbing plastic and glass consistently across live testing.
+        // Calibrated WITH the cardboard floor already active (val macro-F1
+        // peaked at 0.7900 vs. 0.7850 cardboard-only baseline at floor=0.60,
+        // metal precision 0.731 -> 0.899, every other class including
+        // cardboard confirmed unchanged). Same scoping and same "apply to
+        // the final decision only" placement as the cardboard floor.
+        const METAL_CONFIDENCE_FLOOR_REMOVEDBADAPPLES_V2 = 0.60;
+
+        const scanZone = { x: 350, w: 200 };
+        const offscreenSize = Math.max(scanZone.w, canvas.height);
+        offscreenCanvas.width = offscreenSize;
+        offscreenCanvas.height = offscreenSize;
+        
+        const classes = ["organic", "cardboard", "ewaste", "glass", "metal", "paper", "plastic", "unknown"];
+        const colors = {
+            organic: "#e63946", cardboard: "#f4a261", ewaste: "#264653",
+            glass: "#2a9d8f", metal: "#457b9d", paper: "#e9c46a", plastic: "#ff70a6", unknown: "#64748b"
+        };
+        
+        let bins = { organic: 0, cardboard: 0, ewaste: 0, glass: 0, metal: 0, paper: 0, plastic: 0, unknown: 0 };
+        
+        function updateBinsUI() {
+            const grid = document.getElementById('binsGrid');
+            grid.innerHTML = '';
+            let total = 0;
+            classes.forEach(cls => {
+                total += bins[cls] || 0;
+                grid.innerHTML += `
+                    <div class="stat-card" style="border-top-color: ${colors[cls]}" onclick="openHistory('${cls}')">
+                        <div class="stat-value">${bins[cls] || 0}</div>
+                        <div class="stat-label">${cls}</div>
+                    </div>`;
+            });
+            document.getElementById('totalItems').innerText = total;
+        }
+        updateBinsUI();
+
+        const chutes = {};
+        const chuteHeight = canvas.height / classes.length;
+        classes.forEach((cls, i) => {
+            chutes[cls] = { x: 750, y: i * chuteHeight + chuteHeight / 2, h: chuteHeight, top: i * chuteHeight };
+        });
+
+        let sprites = [];
+        let lastScanTime = performance.now();
+        let lastTime = performance.now();
+        let scanning = false;
+        
+        function getOverlappingSprites() {
+            return sprites.filter(s => s.x + s.w > scanZone.x && s.x < scanZone.x + scanZone.w);
+        }
+        
+        function calculateIoU(box1, box2) {
+            const x_left = Math.max(box1[0], box2[0]);
+            const y_top = Math.max(box1[1], box2[1]);
+            const x_right = Math.min(box1[2], box2[2]);
+            const y_bottom = Math.min(box1[3], box2[3]);
+            if (x_right < x_left || y_bottom < y_top) return 0.0;
+            const intersection_area = (x_right - x_left) * (y_bottom - y_top);
+            const box1_area = (box1[2] - box1[0]) * (box1[3] - box1[1]);
+            const box2_area = (box2[2] - box2[0]) * (box2[3] - box2[1]);
+            return intersection_area / parseFloat(box1_area + box2_area - intersection_area);
+        }
+
+        async function spawnSprite() {
+            try {
+                const res = await fetch('/get_random_sprite?' + Math.random());
+                const data = await res.json();
+                const img = new Image();
+                img.onload = () => {
+                    const scale = 0.08 + Math.random() * 0.07;
+                    const targetW = offscreenSize * scale;
+                    const targetH = targetW * (img.height / img.width);
+                    sprites.push({
+                        id: Math.random().toString(),
+                        img: img, w: targetW, h: targetH,
+                        x: -targetW, y: Math.random() * (canvas.height - targetH),
+                        predicted_class: null,
+                        score: 0.0,
+                        scan_time: null,
+                        true_label: data.true_label,
+                        state: 'moving',
+                        best_scan: null,
+                        class_evidence: {} // NOTES.md section 50: per-class summed confidence
+                                            // across every scan frame this sprite matched,
+                                            // NOT just whichever single frame scored highest.
+                    });
+                };
+                img.src = data.image;
+            } catch (e) {}
+        }
+
+        async function triggerScan(overlapping) {
+            scanning = true;
+            
+            const detectorModel = document.getElementById('detectorModel').value;
+            // YOLO was trained on frames natively rendered at 640x640
+            // (generate_yolo_dataset.py's frame_size=(640,640), matching
+            // imgsz=640 at train time). The live canvas's raw offscreenSize
+            // is only 400 -- at scaleFactor=1 that sent Ultralytics a
+            // 400x400 frame, which it silently upsamples ~1.6x internally
+            // to its trained 640 input size before inference. That upsample
+            // blurs fine texture detail, which a heavily-converged model
+            // (yolofirstactual: 271 epochs) leans on more than a less-
+            // converged one -- explains boxes/IoU looking fine while
+            // classification came out wrong live despite strong offline
+            // numbers. 400 * 1.6 = 640 exactly, so this renders YOLO's raw
+            // frame at the SAME native resolution training used, instead of
+            // relying on Ultralytics' own blurry upsample. Cascade's
+            // scaleFactor=3 is untouched (unaffected by this bug -- its
+            // classifiers work on individually-cropped, already high-res
+            // regions, not a whole downsized frame).
+            // NOTES.md section 75: frankenstein needs BOTH things at once --
+            // YOLO's own accurate localization (needs its trained 640
+            // resolution, handled via imgsz=640 passed explicitly server-
+            // side now, decoupled from whatever size frame we send) AND
+            // big, clean crops for Stage 2's classifier (which needs
+            // ~96-180px native crops, same as cascade, to avoid a 2.7-5x
+            // upsample blur before its Resize(256)/CenterCrop(224)).
+            // Rendering at cascade's higher scaleFactor solves the crop-
+            // quality side; Ultralytics rescales returned box coordinates
+            // back to this frame's actual size regardless of what
+            // resolution it internally infers at, so YOLO's own accuracy
+            // isn't sacrificed.
+            const scaleFactor = (detectorModel === 'cascade' || detectorModel === 'frankenstein') ? 3 : 1.6;
+            
+            offscreenCanvas.width = offscreenSize * scaleFactor;
+            offscreenCanvas.height = offscreenSize * scaleFactor;
+            
+            offscreenCtx.fillStyle = beltColor;
+            offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            
+            const sprites_gt = [];
+            const pad = (offscreenSize - scanZone.w) / 2;
+            
+            // FREEZE states: capture exact x/y at this moment so we aren't affected by animation drift during fetch
+            const snapshots = overlapping.map(s => ({
+                sprite: s,
+                x: s.x,
+                y: s.y,
+                w: s.w,
+                h: s.h
+            }));
+            
+            snapshots.forEach(snap => {
+                const sx = (snap.x - scanZone.x + pad) * scaleFactor;
+                const sy = snap.y * scaleFactor;
+                const sw = snap.w * scaleFactor;
+                const sh = snap.h * scaleFactor;
+                offscreenCtx.drawImage(snap.sprite.img, sx, sy, sw, sh);
+                sprites_gt.push({
+                    id: snap.sprite.id,
+                    box: [snap.x - scanZone.x + pad, snap.y, snap.x - scanZone.x + pad + snap.w, snap.y + snap.h],
+                    label: snap.sprite.true_label
+                });
+            });
+            
+            const b64 = offscreenCanvas.toDataURL('image/png');
+            
+            try {
+                const payload = {
+                    image: b64,
+                    confidence_mode: document.getElementById('confidenceMode').value,
+                    nms_method: document.getElementById('nmsMethod').value,
+                    detector_model: detectorModel,
+                    stage2_checkpoint: document.getElementById('stage2Checkpoint').value,
+                    sprites_gt: sprites_gt
+                };
+                
+                const res = await fetch('/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                document.getElementById('latencyMs').innerText = data.latency_ms.toFixed(1);
+                
+                // Update Permanent Debug Section
+                const debugSection = document.getElementById('permanent-debug-section');
+                debugSection.style.display = 'flex';
+                document.getElementById('raw-payload-img').src = b64;
+                
+                const boxesContainer = document.getElementById('raw-payload-boxes');
+                boxesContainer.innerHTML = '';
+                
+                const rawList = document.getElementById('raw-detections-list');
+                if (data.detections && data.detections.length > 0) {
+                    let html = '';
+                    data.detections.forEach(det => {
+                        const cls = det[0];
+                        const rel_box_scaled = det[1]; 
+                        const score = det[2];
+                        const cx = colors[cls] || '#ff0000';
+                        
+                        const pc_left = (rel_box_scaled[0] / (offscreenSize * scaleFactor)) * 100;
+                            const pc_top = (rel_box_scaled[1] / (offscreenSize * scaleFactor)) * 100;
+                            const pc_width = ((rel_box_scaled[2] - rel_box_scaled[0]) / (offscreenSize * scaleFactor)) * 100;
+                            const pc_height = ((rel_box_scaled[3] - rel_box_scaled[1]) / (offscreenSize * scaleFactor)) * 100;
+                            
+                            // Add box to main image overlay
+                            boxesContainer.innerHTML += `
+                                <div style="position: absolute; border: 2px solid ${cx}; 
+                                            left: ${pc_left}%; 
+                                            top: ${pc_top}%; 
+                                            width: ${pc_width}%; 
+                                            height: ${pc_height}%;
+                                            pointer-events: none;">
+                                    <div style="background: ${cx}; color: #000; font-size: 10px; font-weight: bold; padding: 2px 4px; position: absolute; top: -16px; left: -2px; white-space: nowrap;">
+                                        ${cls} ${(score * 100).toFixed(0)}%
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Extract actual crop for the list
+                            const cropCanvas = document.createElement('canvas');
+                            const w = rel_box_scaled[2] - rel_box_scaled[0];
+                            const h = rel_box_scaled[3] - rel_box_scaled[1];
+                            cropCanvas.width = w;
+                            cropCanvas.height = h;
+                            cropCanvas.getContext('2d').drawImage(
+                                offscreenCanvas, 
+                                rel_box_scaled[0], rel_box_scaled[1], w, h, 
+                                0, 0, w, h
+                            );
+                            const cropB64 = cropCanvas.toDataURL('image/png');
+                            
+                            html += `
+                                <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 80px; height: 80px; border: 1px solid #444; background: #000; flex-shrink: 0; display: flex; justify-content: center; align-items: center;">
+                                        <img src="${cropB64}" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                    </div>
+                                    <div style="min-width: 0; overflow: hidden;">
+                                        <strong style="color: ${cx}; font-size: 16px;">${cls}</strong><br/>
+                                        <span style="color: #aaa; font-size: 12px;">Conf: ${(score * 100).toFixed(1)}%</span><br/>
+                                        <span style="color: #666; font-size: 11px;">[${rel_box_scaled.map(v => Math.round(v)).join(', ')}]</span>
+                                    </div>
+                                </div>
+                            `;
+                    });
+                    rawList.innerHTML = html;
+                } else {
+                    rawList.innerHTML = '<p style="color: #666; font-size: 13px; margin: 0;">No detections in this scan.</p>';
+                }
+
+                // Ground-truth overlay (green), drawn alongside the red
+                // detection boxes above, so IoU can be inspected visually
+                // instead of argued about. sprites_gt entries are already
+                // in the "rel_box" (unscaled, pad-adjusted) coordinate
+                // space -- same space det[1]/scaleFactor lands in -- so no
+                // extra transform is needed beyond dividing by offscreenSize
+                // for the percentage (scaleFactor cancels: box/offscreenSize
+                // == (box*scaleFactor)/(offscreenSize*scaleFactor), matching
+                // how the red boxes above are positioned against the same
+                // scaled image). For each ground-truth box, find the best-
+                // overlapping detection (any class) and show the actual
+                // computed IoU right on the label -- this is the same IoU
+                // math and the same 0.5 threshold compute_map uses server-
+                // side, just visible instead of asserted.
+                sprites_gt.forEach(gt => {
+                    const pc_left = (gt.box[0] / offscreenSize) * 100;
+                    const pc_top = (gt.box[1] / offscreenSize) * 100;
+                    const pc_width = ((gt.box[2] - gt.box[0]) / offscreenSize) * 100;
+                    const pc_height = ((gt.box[3] - gt.box[1]) / offscreenSize) * 100;
+
+                    let bestIoU = 0;
+                    (data.detections || []).forEach(det => {
+                        const detBoxUnscaled = det[1].map(v => v / scaleFactor);
+                        const iou = calculateIoU(gt.box, detBoxUnscaled);
+                        if (iou > bestIoU) bestIoU = iou;
+                    });
+                    // Green border = would count as a mAP true positive
+                    // (IoU >= 0.5, matching compute_map's iou_threshold);
+                    // orange = detected/overlapping but below the mAP bar;
+                    // gray = no detection overlapped this ground-truth box
+                    // at all.
+                    const iouColor = bestIoU >= 0.5 ? '#00ff00' : (bestIoU > 0 ? '#ffaa00' : '#888888');
+
+                    boxesContainer.innerHTML += `
+                        <div style="position: absolute; border: 2px dashed ${iouColor};
+                                    left: ${pc_left}%;
+                                    top: ${pc_top}%;
+                                    width: ${pc_width}%;
+                                    height: ${pc_height}%;
+                                    pointer-events: none;">
+                            <div style="background: ${iouColor}; color: #000; font-size: 10px; font-weight: bold; padding: 2px 4px; position: absolute; bottom: -16px; left: -2px; white-space: nowrap;">
+                                GT: ${gt.label} (best IoU: ${bestIoU.toFixed(2)})
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                data.detections.forEach(det => {
+                    const cls = det[0];
+                    const rel_box_scaled = det[1];
+                    const score = det[2];
+                    const top3 = det[3] || []; // NOTES.md section 80: runner-up predictions
+
+                    const rel_box = [
+                        rel_box_scaled[0] / scaleFactor,
+                        rel_box_scaled[1] / scaleFactor,
+                        rel_box_scaled[2] / scaleFactor,
+                        rel_box_scaled[3] / scaleFactor
+                    ];
+                    
+                    const abs_box = [rel_box[0] - pad + scanZone.x, rel_box[1], rel_box[2] - pad + scanZone.x, rel_box[3]];
+                    
+                    let bestIoU = 0;
+                    let bestSprite = null;
+                    let bestSnap = null;
+                    snapshots.forEach(snap => {
+                        const s_box = [snap.x, snap.y, snap.x + snap.w, snap.y + snap.h];
+                        const iou = calculateIoU(abs_box, s_box);
+                        if (iou > bestIoU) { bestIoU = iou; bestSprite = snap.sprite; bestSnap = snap; }
+                    });
+                    
+                    if (bestSprite && bestIoU > 0.1) {
+                        // Live update sprite's visual state to current detection
+                        bestSprite.predicted_class = cls;
+                        bestSprite.score = score;
+                        bestSprite.scan_time = performance.now();
+                        bestSprite.last_detected_box = abs_box;
+
+                        // NOTES.md section 50: accumulate summed confidence per
+                        // class across every frame this sprite matched a
+                        // detection, instead of letting a single highest-
+                        // confidence frame decide the final label outright. A
+                        // lone spurious high-confidence spike on the wrong
+                        // class (one frame out of a whole transit) could
+                        // otherwise hijack the final verdict even when most
+                        // frames correctly classified the object -- consistent
+                        // with the "plastic sink" signature seen live
+                        // (cardboard/organic/paper repeatedly flipped to
+                        // plastic) that survived both a full dataset cleanup
+                        // and the cross-class dedup fix, since both of those
+                        // only affect a SINGLE frame's quality, not how frames
+                        // get combined across a transit. Summing (not
+                        // averaging, not majority-voting) is deliberate:
+                        // section 20 already found averaging and majority-
+                        // voting worse for temporal aggregation, because both
+                        // get diluted by an object's own low-confidence
+                        // entry/exit frames outvoting its good frames. Summing
+                        // avoids that -- many low-confidence frames of a class
+                        // contribute little to that class's total -- while
+                        // still preventing one outlier spike from beating a
+                        // class that was repeatedly, confidently detected.
+                        if (!bestSprite.class_evidence[cls]) {
+                            // NOTES.md section 77: added `count` alongside
+                            // `sum` purely for diagnostics -- lets us tell
+                            // apart "this class won fewer frames" from
+                            // "this class won frames but at lower average
+                            // confidence" when a class loses the final
+                            // sum-based vote despite being correct more
+                            // often per-frame (plastic's live symptom).
+                            // Never read by the winner-selection logic
+                            // below, which still only compares `sum`.
+                            bestSprite.class_evidence[cls] = { sum: 0, count: 0, best: null };
+                        }
+                        const evidence = bestSprite.class_evidence[cls];
+                        evidence.sum += score;
+                        evidence.count += 1;
+
+                        if (!evidence.best || score > evidence.best.score) {
+                            // Cache the visual crop at this class's own
+                            // best-scoring frame (still needed for display /
+                            // the crop sent to finalize_item if this class
+                            // ends up winning).
+                            const cropCanvas = document.createElement('canvas');
+                            const w = rel_box[2] - rel_box[0];
+                            const h = rel_box[3] - rel_box[1];
+                            cropCanvas.width = w;
+                            cropCanvas.height = h;
+                            cropCanvas.getContext('2d').drawImage(
+                                offscreenCanvas,
+                                rel_box_scaled[0], rel_box_scaled[1],
+                                rel_box_scaled[2] - rel_box_scaled[0], rel_box_scaled[3] - rel_box_scaled[1],
+                                0, 0, w, h
+                            );
+                            const cropB64 = cropCanvas.toDataURL('image/png');
+
+                            evidence.best = {
+                                pred_class: cls,
+                                score: score,
+                                box: abs_box,
+                                crop_b64: cropB64,
+                                gt_box_at_scan_time: [bestSnap.x, bestSnap.y, bestSnap.x + bestSnap.w, bestSnap.y + bestSnap.h],
+                                top3: top3
+                            };
+                        }
+
+                        // Re-pick the leading class by TOTAL accumulated
+                        // confidence, not by whichever single frame happened
+                        // to score highest.
+                        let winnerCls = null, winnerSum = -1;
+                        for (const c in bestSprite.class_evidence) {
+                            const s = bestSprite.class_evidence[c].sum;
+                            if (s > winnerSum) { winnerSum = s; winnerCls = c; }
+                        }
+                        bestSprite.best_scan = bestSprite.class_evidence[winnerCls].best;
+                    }
+                });
+                // (Old debug panel logic removed)
+                
+            } catch (e) {
+                console.error(e);
+            }
+            scanning = false;
+        }
+
+        async function resetBins() {
+            try {
+                const res = await fetch('/reset', { method: 'POST' });
+                bins = await res.json();
+                updateBinsUI();
+                if(currentTab === 'dashboard') loadDashboard();
+            } catch (e) {}
+        }
+        
+        async function openHistory(cls) {
+            document.getElementById('modalTitle').innerText = `History: ${cls.toUpperCase()} Bin`;
+            const grid = document.getElementById('galleryGrid');
+            const metrics = document.getElementById('modalMetrics');
+            grid.innerHTML = 'Loading...';
+            metrics.innerHTML = '';
+            document.getElementById('historyModal').style.display = 'flex';
+            
+            try {
+                const res = await fetch('/history/' + cls);
+                const data = await res.json();
+                const items = data.items;
+                const stats = data.stats;
+                
+                metrics.innerHTML = `
+                    <div class="metric-item"><span class="metric-val">${stats.tp}</span><span class="metric-label">True Positives</span></div>
+                    <div class="metric-item"><span class="metric-val">${stats.fp}</span><span class="metric-label">False Positives</span></div>
+                    <div class="metric-item"><span class="metric-val">${stats.fn}</span><span class="metric-label">False Negatives</span></div>
+                    <div class="metric-item"><span class="metric-val">${(stats.precision * 100).toFixed(1)}%</span><span class="metric-label">Precision</span></div>
+                    <div class="metric-item"><span class="metric-val">${(stats.recall * 100).toFixed(1)}%</span><span class="metric-label">Recall</span></div>
+                `;
+                
+                grid.innerHTML = '';
+                
+                if (items.length === 0) {
+                    grid.innerHTML = '<p>No items routed to this bin yet.</p>';
+                    return;
+                }
+                
+                items.reverse().forEach(item => {
+                    const isMatch = (item.pred_class === item.true_label);
+                    const badge = isMatch ? '<div class="match-badge match-true">✓</div>' : '<div class="match-badge match-false">✕</div>';
+
+                    // NOTES.md section 80: next two runner-up predictions,
+                    // straight from Stage 2's own top3 (index 1 = 2nd place,
+                    // index 2 = 3rd place) -- these reflect what the model
+                    // actually considered, which may not always be the same
+                    // ordering as the final pred_class if the plastic-rescue
+                    // swap (section 79) or the unknown threshold changed the
+                    // winner downstream. Guarded for older history entries
+                    // (recorded before this field existed) and organic
+                    // verdicts (Stage 1 is binary, no runner-ups exist).
+                    const t3 = item.top3 || [];
+                    const second = t3[1] ? `<div style="color:#888; font-size: 0.85em;">2nd: ${t3[1][0]} (${(t3[1][1] * 100).toFixed(0)}%)</div>` : '';
+                    const third = t3[2] ? `<div style="color:#888; font-size: 0.85em;">3rd: ${t3[2][0]} (${(t3[2][1] * 100).toFixed(0)}%)</div>` : '';
+
+                    grid.innerHTML += `
+                        <div class="gallery-item">
+                            ${badge}
+                            <img src="${item.crop}" alt="Crop">
+                            <div class="gallery-details">
+                                <div>Pred: <strong>${item.pred_class}</strong> (${(item.confidence * 100).toFixed(0)}%)</div>
+                                <div>True: <strong>${item.true_label}</strong></div>
+                                ${second}
+                                ${third}
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                grid.innerHTML = 'Error loading history.';
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        function loop(timestamp) {
+            requestAnimationFrame(loop);
+            
+            if (isPaused) return;
+            
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            
+            // Still update belt state in background if dashboard is open
+            const speed = parseFloat(document.getElementById('beltSpeed').value);
+            const spawnRate = parseFloat(document.getElementById('spawnRate').value);
+            
+            beltOffset += speed * dt;
+            
+            if (Math.random() < spawnRate) spawnSprite();
+            
+            for (let i = sprites.length - 1; i >= 0; i--) {
+                const s = sprites[i];
+                if (s.state === 'moving') {
+                    s.x += speed * dt;
+                    if (s.x > scanZone.x + scanZone.w + 10) {
+                        s.state = 'diverting';
+                        
+                        // Finalize the item on exit
+                        let payload = {};
+                        if (s.best_scan) {
+                            // Cardboard confidence floor (NOTES.md section
+                            // 64 follow-up): applied HERE, to the one
+                            // final decision per object, not per raw
+                            // frame -- a per-frame version starved
+                            // cardboard's accumulated evidence total
+                            // during the transit and let OTHER classes win
+                            // votes they wouldn't have otherwise (live-
+                            // tested and reverted). This only touches
+                            // objects whose FINAL winning class is
+                            // cardboard below the floor -- every other
+                            // object's aggregation and final class is
+                            // completely unaffected.
+                            // Metal confidence floor (NOTES.md section 65)
+                            // REVERTED after live testing: precision did
+                            // improve as designed (62% -> 78.6%) but live
+                            // recall collapsed much further than the
+                            // offline calibration predicted (~70-76% ->
+                            // 48.8%, vs. the predicted 72.4%), netting a
+                            // real drop in metal's own F1 (69.6 -> 60.1)
+                            // and a small drop in overall macro-F1 (68.2
+                            // -> 66.9). Unlike the cardboard floor, this
+                            // one was a net loss on its own target class,
+                            // not just a tradeoff -- disabled, not
+                            // deleted, in case it's worth revisiting with
+                            // a lower floor value.
+                            // lastditchattempt (hard-example fine-tune of
+                            // removedbadapples_v2) was first live-tested
+                            // WITHOUT this floor -- cardboard precision came
+                            // back at 44.9%/42.6% across two runs, almost
+                            // exactly matching removedbadapples_v2's own
+                            // pre-floor baseline, not a genuine regression
+                            // in lastditchattempt's own model quality. Same
+                            // 6-class architecture, warm-started from the
+                            // exact checkpoint the 0.65 floor was calibrated
+                            // against -- reusing it here as the fairest
+                            // apples-to-apples starting point, still NOT a
+                            // value independently recalibrated for
+                            // lastditchattempt's own (slightly shifted, per
+                            // its own softmax) confidence distribution.
+                            const stage2Checkpoint = document.getElementById('stage2Checkpoint').value;
+                            let finalPredClass = s.best_scan.pred_class;
+                            if ((stage2Checkpoint === 'removedbadapples_v2' || stage2Checkpoint === 'lastditchattempt') &&
+                                finalPredClass === 'cardboard' &&
+                                s.best_scan.score < CARDBOARD_CONFIDENCE_FLOOR_REMOVEDBADAPPLES_V2) {
+                                finalPredClass = 'unknown';
+                            }
+
+                            // NOTES.md section 81: whatever sent this item to
+                            // "unknown" (the floor above, or the per-frame
+                            // threshold via evidence accumulation), try the
+                            // 2nd-place guess before giving up. best_scan.top3
+                            // reflects Stage 2's real distribution on
+                            // whichever frame won -- top3[0] is the
+                            // (rejected) winner, top3[1] is the runner-up.
+                            let finalConfidence = s.best_scan.score;
+                            if (finalPredClass === 'unknown' && s.best_scan.top3 && s.best_scan.top3.length > 1) {
+                                const secondGuess = s.best_scan.top3[1];
+                                if (secondGuess[1] >= UNKNOWN_RESCUE_MIN_CONFIDENCE) {
+                                    finalPredClass = secondGuess[0];
+                                    finalConfidence = secondGuess[1]; // report the RESCUED class's own probability, not the rejected winner's
+                                }
+                            }
+
+                            // NOTES.md section 77 diagnostic: plastic shows
+                            // high precision/low recall LIVE (aggregated
+                            // verdict) but good recall OFFLINE (single-
+                            // frame, from calibrate_plastic_lastditchattempt.py) --
+                            // meaning Stage 2 calls plastic correctly often
+                            // per-frame, but loses the SUM-based final vote
+                            // to another class. Logging each item's full
+                            // per-class {sum, count, avg} breakdown to tell
+                            // apart "plastic got fewer frames" (tracking/
+                            // localization issue) from "plastic's frames
+                            // scored lower on average" (confidence-
+                            // magnitude issue) -- only printed when
+                            // true_label is plastic OR the winner is
+                            // plastic, to avoid flooding the console for
+                            // every item.
+                            if (s.true_label === 'plastic' || finalPredClass === 'plastic') {
+                                // Plain string, not a logged object -- Chrome
+                                // collapses logged objects into a clickable
+                                // "Object" placeholder that doesn't survive
+                                // copy-paste out of the console. Building the
+                                // full breakdown into the string itself so
+                                // it's plain text, no expanding needed.
+                                const parts = [];
+                                for (const c in s.class_evidence) {
+                                    const e = s.class_evidence[c];
+                                    const avg = (e.sum / e.count).toFixed(3);
+                                    parts.push(`${c}(sum=${e.sum.toFixed(2)},n=${e.count},avg=${avg})`);
+                                }
+                                console.log(`[plastic-diag] true=${s.true_label} winner=${finalPredClass} :: ${parts.join(' ')}`);
+                            }
+
+                            s.predicted_class = finalPredClass; // divert to best predicted bin
+                            payload = {
+                                pred_class: finalPredClass,
+                                confidence: finalConfidence,
+                                true_label: s.true_label,
+                                crop_b64: s.best_scan.crop_b64,
+                                box: s.best_scan.box,
+                                gt_box: s.best_scan.gt_box_at_scan_time,
+                                top3: s.best_scan.top3
+                            };
+                        } else {
+                            s.predicted_class = 'unknown'; // missed items fall off to unknown visually
+                            payload = {
+                                pred_class: 'missed',
+                                true_label: s.true_label,
+                                gt_box: [s.x, s.y, s.x + s.w, s.y + s.h]
+                            };
+                        }
+                        
+                        // Send finalize request
+                        fetch('/finalize_item', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }).then(r => r.json()).then(data => {
+                            bins = data.counts;
+                            updateBinsUI();
+                            if(currentTab === 'dashboard') loadDashboard();
+                        }).catch(e => console.error(e));
+                    }
+                } else if (s.state === 'diverting') {
+                    s.x += speed * dt;
+                    const targetCenterY = chutes[s.predicted_class].y;
+                    const targetTopY = targetCenterY - s.h / 2;
+                    const dy = targetTopY - s.y;
+                    s.y += dy * dt * 3; 
+                }
+                
+                if (s.x > canvas.width + 100) sprites.splice(i, 1);
+            }
+            
+            const overlapping = getOverlappingSprites();
+            
+            // Fixed-rate continuous polling: 150ms
+            if (timestamp - lastScanTime > 150 && !scanning) {
+                lastScanTime = timestamp;
+                triggerScan(overlapping);
+            }
+            
+            // Only draw if tab is active
+            if(currentTab === 'belt') {
+                if (beltImg.complete && beltImg.width > 0) {
+                    const sw = beltImg.width * (canvas.height / beltImg.height);
+                    const offset = beltOffset % sw;
+                    for (let x = offset - sw; x < canvas.width; x += sw) {
+                        ctx.drawImage(beltImg, x, 0, sw, canvas.height);
+                    }
+                } else {
+                    ctx.fillStyle = beltColor;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(scanZone.x, 0, scanZone.w, canvas.height);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(scanZone.x, 0); ctx.lineTo(scanZone.x, canvas.height);
+                ctx.moveTo(scanZone.x + scanZone.w, 0); ctx.lineTo(scanZone.x + scanZone.w, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                for (const [cls, pos] of Object.entries(chutes)) {
+                    // Draw a subtle translucent lane connecting the scan zone to the chute
+                    ctx.fillStyle = colors[cls];
+                    ctx.globalAlpha = 0.05;
+                    ctx.fillRect(scanZone.x + scanZone.w, pos.top, canvas.width - (scanZone.x + scanZone.w), pos.h);
+                    
+                    // Draw the chute block
+                    ctx.globalAlpha = 1.0;
+                    ctx.fillRect(pos.x, pos.top, 150, pos.h);
+                    
+                    // Draw a colored track line
+                    ctx.beginPath();
+                    ctx.moveTo(scanZone.x + scanZone.w, pos.y);
+                    ctx.lineTo(pos.x, pos.y);
+                    ctx.strokeStyle = colors[cls];
+                    ctx.globalAlpha = 0.3;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.globalAlpha = 1.0;
+                    
+                    // Label
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 12px Inter';
+                    ctx.fillText(cls.toUpperCase(), pos.x + 10, pos.y + 4);
+                }
+                
+                const now = performance.now();
+                sprites.forEach(s => {
+                    ctx.drawImage(s.img, s.x, s.y, s.w, s.h);
+                    
+                    if (s.predicted_class && s.scan_time && (now - s.scan_time < 1500)) {
+                        const alpha = Math.max(0, 1 - (now - s.scan_time) / 1500);
+                        
+                        ctx.fillStyle = colors[s.predicted_class] || 'white';
+                        ctx.font = '12px Inter';
+                        ctx.fillText(`${s.predicted_class} ${(s.score).toFixed(2)}`, s.x, s.y - 5);
+                        
+                        ctx.globalAlpha = 1.0;
+                    }
+                });
+            }
+        }
+        
+        // Model/checkpoint dropdown explainer text (F1 = macro-F1 on the
+        // live belt, averaged across multiple runs; mAP = offline mAP@0.5
+        // from Ultralytics' own validation). See NOTES.md "Final Results".
+        const MODEL_HINTS = {
+            frankenstein: 'YOLO finds the objects, the cascade classifies them. Best result found: ~74.7% live F1.',
+            cascade: 'Two-step classifier: organic/recyclable gate, then 6-class material ID. ~71.5% live F1.',
+            yolo: 'Single-pass detector -- finds and classifies objects together. mAP@0.5 0.852 offline.'
+        };
+        const CASCADE_HINTS = {
+            lastditchattempt: 'Hard-example fine-tune, current best. ~71.5% live F1.',
+            removedbadapples_v2: 'Earlier version, kept for comparison. ~69.9% live F1.'
+        };
+        function updateModelHint() {
+            const model = document.getElementById('detectorModel').value;
+            document.getElementById('detectorModelHint').textContent = MODEL_HINTS[model] || '';
+            // The cascade checkpoint only matters when the cascade classifier
+            // is actually in use (cascade or frankenstein mode) -- hide it
+            // for pure YOLO mode instead of leaving a control that does nothing.
+            document.getElementById('cascadeCheckpointGroup').style.display =
+                (model === 'yolo') ? 'none' : '';
+        }
+        function updateCascadeHint() {
+            const ckpt = document.getElementById('stage2Checkpoint').value;
+            document.getElementById('cascadeCheckpointHint').textContent = CASCADE_HINTS[ckpt] || '';
+        }
+        updateModelHint();
+        updateCascadeHint();
+
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>

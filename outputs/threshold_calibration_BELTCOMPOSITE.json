@@ -1,0 +1,83 @@
+{
+  "recommended_stage1_cutoff": 0.5,
+  "recommended_stage2_threshold": 0.4,
+  "recommended_macro_f1": 0.862167595209453,
+  "recommended_weighted_f1": 0.9088298840630956,
+  "current_stage1_cutoff": 0.65,
+  "current_stage2_threshold": 0.5,
+  "current_macro_f1": 0.8550119621211598,
+  "current_weighted_f1": 0.9028536509204665,
+  "top_10": [
+    {
+      "stage1_cutoff": 0.5,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.862167595209453,
+      "weighted_f1": 0.9088298840630956,
+      "n_unknown": 53
+    },
+    {
+      "stage1_cutoff": 0.5,
+      "stage2_threshold": 0.45,
+      "macro_f1": 0.8607230651874886,
+      "weighted_f1": 0.9059350359423193,
+      "n_unknown": 87
+    },
+    {
+      "stage1_cutoff": 0.55,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.8606192637631206,
+      "weighted_f1": 0.9084353419710247,
+      "n_unknown": 54
+    },
+    {
+      "stage1_cutoff": 0.65,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.8606016725566182,
+      "weighted_f1": 0.909444701055372,
+      "n_unknown": 55
+    },
+    {
+      "stage1_cutoff": 0.6,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.8601445546772094,
+      "weighted_f1": 0.9086214181111089,
+      "n_unknown": 54
+    },
+    {
+      "stage1_cutoff": 0.55,
+      "stage2_threshold": 0.45,
+      "macro_f1": 0.8595913235892317,
+      "weighted_f1": 0.9057337882026443,
+      "n_unknown": 89
+    },
+    {
+      "stage1_cutoff": 0.45,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.8592486665939599,
+      "weighted_f1": 0.9064864644255178,
+      "n_unknown": 52
+    },
+    {
+      "stage1_cutoff": 0.65,
+      "stage2_threshold": 0.45,
+      "macro_f1": 0.8588239312367428,
+      "weighted_f1": 0.9063908568400197,
+      "n_unknown": 93
+    },
+    {
+      "stage1_cutoff": 0.7,
+      "stage2_threshold": 0.4,
+      "macro_f1": 0.8586049975677285,
+      "weighted_f1": 0.9074950581390803,
+      "n_unknown": 58
+    },
+    {
+      "stage1_cutoff": 0.6,
+      "stage2_threshold": 0.45,
+      "macro_f1": 0.8584952337458578,
+      "weighted_f1": 0.9056344807686614,
+      "n_unknown": 90
+    }
+  ],
+  "n_calibration_images": 2086
+}
