@@ -1,3 +1,14 @@
+---
+title: Trashcam App
+emoji: ♻️
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: "4.36.0"
+app_file: app.py
+pinned: false
+---
+
 # Waste Classification -- PyTorch Rebuild
 
 A real-time waste-sorting computer vision project built around a simulated
