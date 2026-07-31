@@ -11,6 +11,8 @@ pinned: false
 
 # Waste Classification -- PyTorch Rebuild
 
+👉 **[Test out the webapp here!](https://huggingface.co/spaces/atharva9/trashcam-app)** 👈
+
 A real-time waste-sorting computer vision project built around a simulated
 conveyor belt: objects move across a live camera feed, get localized,
 classified into one of six recyclable material classes (or "organic"), and
