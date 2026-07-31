@@ -481,7 +481,9 @@ def scan():
     image_b64 = data.get("image", "")
     confidence_mode = data.get("confidence_mode", "balanced")
     nms_method = data.get("nms_method", "soft_gaussian")
-    detector_model = data.get("detector_model", "yolo")
+    detector_model = data.get("detector_model")
+    if detector_model not in ["cascade", "frankenstein", "yolo"]:
+        detector_model = "frankenstein"
     stage2_checkpoint = data.get("stage2_checkpoint", "lastditchattempt")
     # "lastditchattempt" (NEW DEFAULT): hard-example fine-tune of
     # removedbadapples_v2 (see scripts/finetune_stage2_hardmine_v3.py),

@@ -449,7 +449,7 @@
         async function triggerScan(overlapping) {
             scanning = true;
             
-            const detectorModel = document.getElementById('detectorModel').value;
+            const rawModel = document.getElementById('detectorModel').value; const detectorModel = (rawModel === 'cascade' || rawModel === 'yolo') ? rawModel : 'frankenstein';
             // YOLO was trained on frames natively rendered at 640x640
             // (generate_yolo_dataset.py's frame_size=(640,640), matching
             // imgsz=640 at train time). The live canvas's raw offscreenSize
